@@ -11,21 +11,59 @@ var firebase = require('firebase');
   };
   firebase.initializeApp(config);
 
-
 class Authen extends Component {
   login(event) {
     const email = this.refs.email.value;
     const password = this.refs.password.value;
 
     const auth = firebase.auth();
-    // TODO: handle login process
 
     const promise = auth.signInWithEmailAndPassword(email, password);
+
+    promise.then(user => {
+      var lout = document.getElementById('logout');
+      lout.classList.remove('hide');
+      this.setState({err: 'Welcome ' + user.email});
+    });
+
     promise.catch(e => {
       var err = e.message;
       console.log(err);
       this.setState({err: err});
     });
+  }
+
+  signup(){
+    const email = this.refs.email.value;
+    const password = this.refs.password.value;
+
+    const auth = firebase.auth();
+
+    const promise = auth.createUserWithEmailAndPassword(email, password);
+
+    promise
+    .then(user => {
+      var err = "Welcome " + user.email;
+      firebase.database().ref('users/'+user.uid).set({
+        email: user.email
+      });
+      console.log(user);
+      this.setState({err: err});
+    });
+    promise
+    .catch(e => {
+      var err = e.message;
+      console.log(err);
+      this.setState(({err: err}));
+    });
+  }
+
+  logout(){
+    const email = this.refs.email.value;
+    firebase.auth().signOut();
+    var lout = document.getElementById('logout');
+    lout.classList.add('hide');
+    this.setState({err: 'Thanks for using our app ' + email});
   }
 
   constructor(props) {
@@ -35,6 +73,8 @@ class Authen extends Component {
       err: ''
     };
     this.login = this.login.bind(this);
+    this.signup = this.signup.bind(this);
+    this.logout = this.logout.bind(this);
   }
 
   render() {
@@ -46,8 +86,8 @@ class Authen extends Component {
         <br/>
         <p>{this.state.err}</p>
         <button onClick={this.login}>Log In</button>
-        <button>Sign Up</button>
-        <button>Log Out</button>
+        <button onClick={this.signup}>Sign Up</button>
+        <button onClick={this.logout} id='logout' className='hide'>Log Out</button>
       </div>
     );
   }
