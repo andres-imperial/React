@@ -27,8 +27,8 @@ router.post('/api/users', function(req, res) {
     res.status(500).send('Error: User already exists');
   }
   else{
-    db.push('/users[]', req.body, true);
     res.send('User added to DB');
+    db.push('/users[]', req.body, true);
   }
 });
 

@@ -28,16 +28,25 @@ class SignupForm extends Component {
     })
   }
 
+  passwordsMatch(){
+    return (this.state.password === this.state.passwordConformation);
+  }
+
   onSubmit(e){
     e.preventDefault();
-    this.props.userSignupRequest(this.state)
-    .then(() =>{
-      this.setState({loggedIn: true});
-    })
-    .catch(e => {
-      console.log(e);
-      alert(e.data)
-    });
+    if(this.passwordsMatch()){
+      this.props.userSignupRequest(this.state)
+      .then(() =>{
+        this.setState({loggedIn: true});
+      })
+      .catch(e => {
+        console.log(e);
+        alert(e.data)
+      });
+    }
+    else{
+      alert('Passwords do not Match');
+    }
   }
 
   render(){
